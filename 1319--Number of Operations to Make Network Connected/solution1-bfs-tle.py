@@ -28,13 +28,15 @@ class Solution(object):
 
 
 def bfs(i, graph, visited):
-    queue = [i]
+    queue = collections.deque()
+    queue.append(i)
 
     while len(queue) != 0:
-        node = queue.pop(0)
+        node = queue.popleft()
         visited[node] = 1
 
         child = graph[node]
         for i in range(len(child)):
             if visited[child[i]] == 0:
+                visited[child[i]] = 1
                 queue.append(child[i])
