@@ -19,22 +19,21 @@ class Solution(object):
                 else:
                     dict1[word[:i] + '*' + word[i + 1:]].append(word)
 
-        queue = [beginWord]
+        queue = [(beginWord, [beginWord])]
+        result = []
         visited = set()
         path = {}
-        depth = 1
-        flag = False
 
         while len(queue) != 0:
             n_q = len(queue)
 
             for i in range(n_q):
-                word = queue.pop(0)
-                if word != endWord:
-                    visited.add(word)
-                else:
-                    flag = True
-                    break
+                word, path = queue.pop(0)
+
+                if word == endWord:
+                    result.append(path)
+
+                visited.add(word)
 
                 for j in range(n):
                     parent = word[:j] + '*' + word[j + 1:]
@@ -42,36 +41,9 @@ class Solution(object):
 
                     for child in children:
                         if child not in visited:
-                            queue.append(child)
-                            if path.get(child) is None:
-                                path[child] = set()
-                            path[child].add(word)
-            if flag:
+                            queue.append((child, path + [child]))
+            if len(result) != 0:
                 break
-            depth += 1
-
-        if flag is False:
-            return []
-
-        result = []
-        curr = []
-
-        def helper(word, curr):
-            if len(curr) > depth - 1:
-                return
-            if word == beginWord:
-                temp = list(curr) + [beginWord]
-                temp.reverse()
-                result.append(temp)
-                return
-
-            curr.append(word)
-            parents = list(path.get(word, set()))
-            for parent in parents:
-                helper(parent, curr)
-            curr.pop()
-
-        helper(endWord, curr)
 
         return result
 
