@@ -4,15 +4,16 @@ class Solution(object):
         :type n: int
         :rtype: List[int]
         """
-        result = [0 for _ in range(n + 1)]
-
         if n == 0:
-            return 0
+            return [0]
+        if n == 1:
+            return [0, 1]
+        dp = [0 for _ in range(n + 1)]
+        dp[0] = 0
+        dp[1] = 1
+        dp[2] = 1
 
-        result[0] = 0
-        result[1] = 1
+        for i in range(3, n + 1):
+            dp[i] = dp[i // 2] + i % 2
 
-        for i in range(2, n + 1):
-            result[i] = result[i // 2] + i % 2
-
-        return result
+        return dp
