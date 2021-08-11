@@ -14,31 +14,31 @@ class Solution(object):
             return l2
         if l2 is None:
             return l1
+        left = l1
+        right = l2
 
+        head = None
         prev = None
 
-        while l1 and l2:
-            if l1.val <= l2.val:
-                if prev is None:
-                    prev = l1
-                    start = l1
-                else:
-                    prev.next = l1
-                    prev = prev.next
-                l1 = l1.next
+        while left is not None and right is not None:
+            if left.val <= right.val:
+                if head is None:
+                    head = left
+                if prev:
+                    prev.next = left
+                prev = left
+                left = left.next
             else:
-                if prev is None:
-                    prev = l2
-                    start = l2
-                else:
-                    prev.next = l2
-                    prev = prev.next
-                l2 = l2.next
+                if head is None:
+                    head = right
+                if prev:
+                    prev.next = right
+                prev = right
+                right = right.next
 
-        if l1:
-            prev.next = l1
+        if left:
+            prev.next = left
+        if right:
+            prev.next = right
 
-        if l2:
-            prev.next = l2
-
-        return start
+        return head
