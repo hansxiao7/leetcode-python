@@ -4,43 +4,21 @@ class Solution(object):
         :type board: List[List[str]]
         :rtype: bool
         """
-        row = []
-        column = []
+        row = [0 for _ in range(9)]
+        col = [0 for _ in range(9)]
         box = [[0 for _ in range(3)] for _ in range(3)]
 
-        m = len(board)
-        n = len(board[0])
-
-        for i in range(m):
-            temp = 0
-            for j in range(n):
+        for i in range(9):
+            for j in range(9):
                 if board[i][j] != '.':
-                    curr = board[i][j]
-                    if temp == temp | 1 << int(curr):
-                        return False
-                    temp |= 1 << int(board[i][j])
-            row.append(temp)
+                    temp = 1 << int(board[i][j])
 
-        for j in range(n):
-            temp = 0
-            for i in range(m):
-                if board[i][j] != '.':
-                    curr = board[i][j]
-                    if temp == temp | 1 << int(curr):
+                    if row[i] | temp == row[i] or col[j] | temp == col[j] or box[i // 3][j // 3] | temp == box[i // 3][
+                        j // 3]:
                         return False
-                    temp |= 1 << int(board[i][j])
-            column.append(temp)
 
-        for i in range(3):
-            for j in range(3):
-                temp = 0
-                for m in range(3):
-                    for n in range(3):
-                        curr = board[i * 3 + m][j * 3 + n]
-                        if curr != '.':
-                            if temp == temp | 1 << int(curr):
-                                return False
-                            temp |= 1 << int(curr)
-                box[i][j] = temp
+                    row[i] |= temp
+                    col[j] |= temp
+                    box[i // 3][j // 3] |= temp
 
         return True
