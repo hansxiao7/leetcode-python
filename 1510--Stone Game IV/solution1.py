@@ -4,28 +4,29 @@ class Solution(object):
         :type n: int
         :rtype: bool
         """
+        pow = 1
 
-        cache = {0: 0}
+        while pow ** 2 <= n:
+            pow += 1
 
-        def helper(n):
-            if cache.get(n):
+        cache = {}
+
+        def helper(n, pow):
+            if n in cache:
                 return cache[n]
             if n == 0:
-                return 0
+                return False
 
-            curr = 1
-            result = -sys.maxint
+            for i in range(1, pow):
+                if i ** 2 <= n:
+                    temp = helper(n - i ** 2, pow)
 
-            while curr ** 2 <= n:
-                result = max(1 - helper(n - curr ** 2), result)
-                curr += 1
-            cache[n] = result
-            return result
-
-        result = helper(n)
-
-        if result > 0:
-            return True
-        else:
+                    if temp is False:
+                        cache[n] = True
+                        return True
+                else:
+                    break
+            cache[n] = False
             return False
 
+        return helper(n, pow)
