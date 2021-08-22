@@ -6,43 +6,42 @@ class Solution(object):
         :type positions: List[List[int]]
         :rtype: List[int]
         """
-        # union find
+        counts = 0
         graph = {}
-        roots = set()
+
         result = []
+        neighbors = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
         for pos in positions:
             x = pos[0]
             y = pos[1]
-            pos_id = x * n + y
 
-            if graph.get(pos_id):
-                result.append(result[-1])
+            if (x, y) in graph:
+                result.append(counts)
                 continue
-            graph[pos_id] = pos_id
-            roots.add(pos_id)
 
-            if x - 1 >= 0 and graph.get((x - 1) * n + y) is not None:
-                union(pos_id, (x - 1) * n + y, graph, roots)
+            counts += 1
 
-            if x + 1 < m and graph.get((x + 1) * n + y) is not None:
-                union(pos_id, (x + 1) * n + y, graph, roots)
+            graph[(x, y)] = (x, y)
+            for dx, dy in neighbors:
+                new_x = x + dx
+                new_y = y + dy
 
-            if y - 1 >= 0 and graph.get(pos_id - 1) is not None:
-                union(pos_id, pos_id - 1, graph, roots)
+                if new_x < 0 or new_x >= m or new_y < 0 or new_y >= n or (new_x, new_y) not in graph:
+                    continue
 
-            if y + 1 < n and graph.get(pos_id + 1) is not None:
-                union(pos_id, pos_id + 1, graph, roots)
+                if find((new_x, new_y), graph) != find((x, y), graph):
+                    counts -= 1
+                    union((new_x, new_y), (x, y), graph)
 
-            result.append(len(roots))
-
+            result.append(counts)
         return result
 
 
 def find(x, graph):
     p = graph[x]
 
-    while graph[p] != p:
+    while p != graph[p]:
         p = graph[p]
 
     graph[x] = p
@@ -50,10 +49,8 @@ def find(x, graph):
     return p
 
 
-def union(x, y, graph, roots):
+def union(x, y, graph):
     x_root = find(x, graph)
     y_root = find(y, graph)
-    roots.remove(x_root)
-    roots.add(y_root)
 
     graph[x_root] = y_root
