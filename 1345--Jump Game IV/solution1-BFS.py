@@ -4,47 +4,48 @@ class Solution(object):
         :type arr: List[int]
         :rtype: int
         """
-        if len(arr) == 1:
-            return 0
+        maps = {}
 
-        if arr[0] == arr[-1]:
-            return 1
+        for i in range(len(arr)):
+            if arr[i] not in maps:
+                maps[arr[i]] = []
 
-        # build graph
-        graph = {}
-        n = len(arr)
-        for i in range(n - 1):
-            for j in range(i + 1, n):
+            maps[arr[i]].append(i)
 
-                if graph.get(i) is None:
-                    graph[i] = []
-
-                if graph.get(j) is None:
-                    graph[j] = []
-
-                if j == i + 1 or arr[j] == arr[i]:
-                    graph[i].append(j)
-                    graph[j].append(i)
-
-        queue = [(0, 0)]
+        # BFS
+        queue = collections.deque()
+        queue.append(0)
         visited = set()
-
+        visited.add(0)
+        rank = 0
         while len(queue) != 0:
+            n_q = len(queue)
+            for i in range(n_q):
+                node = queue.popleft()
 
-            dis, node = queue.pop(0)
+                if node == len(arr) - 1:
+                    return rank
 
-            if node in visited:
-                continue
+                children = maps.get(arr[node])
 
-            if node == n - 1:
-                return dis
+                for j in range(len(children)):
+                    child = children[j]
 
-            visited.add(node)
+                    if child not in visited:
+                        visited.add(child)
+                        queue.append(child)
+                maps[arr[node]] = []
+                left = node - 1
+                right = node + 1
 
-            children = graph.get(node, [])
-            for i in range(len(children)):
-                child = children[i]
-                if child not in visited:
-                    queue.append((1 + dis, child))
+                if left >= 0 and left not in visited:
+                    visited.add(left)
+                    queue.append(left)
+
+                if right < len(arr) and right not in visited:
+                    visited.add(right)
+                    queue.append(right)
+
+            rank += 1
 
 

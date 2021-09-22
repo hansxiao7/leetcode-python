@@ -4,47 +4,49 @@ class Solution(object):
         :type arr: List[int]
         :rtype: int
         """
-        if len(arr) == 1:
-            return 0
+        maps = {}
+        for i in range(len(arr)):
+            if arr[i] not in maps:
+                maps[arr[i]] = []
 
-        if arr[0] == arr[-1]:
-            return 1
+            maps[arr[i]].append(i)
 
-        # build graph
-        graph = {}
-        n = len(arr)
-        for i in range(n - 1):
-            for j in range(i + 1, n):
+        # bidirectional BFS
+        s1 = set()
+        s2 = set()
+        s1.add(0)
+        s2.add(len(arr) - 1)
 
-                if graph.get(i) is None:
-                    graph[i] = []
-
-                if graph.get(j) is None:
-                    graph[j] = []
-
-                if j == i + 1 or arr[j] == arr[i]:
-                    graph[i].append(j)
-                    graph[j].append(i)
-
-        queue1 = {0}
-        queue2 = {n - 1}
-        step = 0
         visited = set()
+        rank = 0
 
-        while len(queue1) != 0 and len(queue2) != 0:
-            if len(queue1) > len(queue2):
-                queue1, queue2 = queue2, queue1
+        while len(s1) != 0 and len(s2) != 0:
+            if len(s2) < len(s1):
+                s1, s2 = s2, s1
 
             s = set()
-            n_q = len(queue1)
 
-            for i in queue1:
-                if i in queue2:
-                    return step
-                children = graph.get(i, [])
-                for j in range(len(children)):
-                    child = children[j]
+            for node in s1:
+                if node in s2:
+                    return rank
+
+                visited.add(node)
+                children = maps.get(arr[node], [])
+
+                for i in range(len(children)):
+                    child = children[i]
+
                     if child not in visited:
                         s.add(child)
-            step += 1
-            queue1 = s
+
+                left = node - 1
+                right = node + 1
+
+                if left >= 0 and left not in visited:
+                    s.add(left)
+
+                if right < len(arr) and right not in visited:
+                    s.add(right)
+
+            rank += 1
+            s1 = s
