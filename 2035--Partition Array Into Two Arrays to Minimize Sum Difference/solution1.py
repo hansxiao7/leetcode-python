@@ -9,37 +9,38 @@ class Solution(object):
         nums1 = nums[:n]
         nums2 = nums[n:]
 
-        maps = {0: [0]}
+        maps = {}
 
-        def helper(pos, arr, curr, k):
-            if k == 0:
-                if len(curr) not in maps:
-                    maps[len(curr)] = []
-                maps[len(curr)].append(sum(curr))
+        def helper(pos, arr, curr):
+            if len(curr) not in maps:
+                maps[len(curr)] = set()
+            maps[len(curr)].add(sum(curr))
+
+            if pos == len(arr):
                 return
 
             for i in range(pos, len(arr)):
-                helper(i + 1, arr, curr + [arr[i]], k - 1)
+                helper(i + 1, arr, curr + [arr[i]])
 
-        for i in range(1, n + 1):
-            helper(0, nums2, [], i)
+        helper(0, nums2, [])
 
         for key in maps:
+            maps[key] = list(maps[key])
             maps[key].sort()
 
         self.res = abs(sum(nums1) - sum(nums2))
         visited = set()
 
-        def comb(pos, x, k, curr):
-            if k == 0:
-                if (x, curr) in visited:
-                    return
+        def comb(pos, curr):
+            x = len(curr)
+            currValue = sum(curr)
+            if (x, currValue) not in visited:
+                visited.add((x, currValue))
                 temp = maps[n - x]
 
-                visited.add((x, curr))
                 left = 0
                 right = len(temp) - 1
-                target = (total - 2 * curr) / 2.0
+                target = (total - 2 * currValue) / 2.0
                 while left < right:
                     mid = (left + right) // 2
                     if temp[mid] < target:
@@ -49,19 +50,20 @@ class Solution(object):
                     else:
                         left = mid
                         break
-                self.res = min(self.res, abs(total - 2 * (curr + temp[left])))
+                self.res = min(self.res, abs(total - 2 * (currValue + temp[left])))
 
                 if temp[left] > target and left != 0:
-                    self.res = min(self.res, abs(total - 2 * (curr + temp[left - 1])))
+                    self.res = min(self.res, abs(total - 2 * (currValue + temp[left - 1])))
 
                 if temp[left] < target and left != len(temp) - 1:
-                    self.res = min(self.res, abs(total - 2 * (curr + temp[left + 1])))
+                    self.res = min(self.res, abs(total - 2 * (currValue + temp[left + 1])))
+
+            if pos == len(nums1):
                 return
 
             for i in range(pos, len(nums1)):
-                comb(i + 1, x, k - 1, curr + nums1[i])
+                comb(i + 1, curr + [nums1[i]])
 
-        for i in range(1, n + 1):
-            comb(0, i, i, 0)
+        comb(0, [])
 
         return self.res
